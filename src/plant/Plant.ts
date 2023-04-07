@@ -20,13 +20,13 @@ export class Plant extends Branch implements IPlant {
     genome: IGenome;
     properties: IPlantProperties;
     isStem: boolean = true;
-    constructor(species: string, genome: IGenome) {
+    constructor(species: string, genome: IGenome, position: {x:number, y: number}) {
         const properties = parseGenome(genome);
         super(null, properties.plant, properties);
         this.species = species;
         this.genome = genome;
         this.properties = properties;
-        this.position = { x: 200, y: 800 };
+        this.position = position;
     }
 
     formFruit(): void {
@@ -39,6 +39,6 @@ export class Plant extends Branch implements IPlant {
 
     crossbreed(otherPlant: IPlant): IPlant {
         //TODO: реализовать скрещивание двух растений
-        return new Plant("", new Genome([]));
+        return new Plant("", new Genome([]), this.position);
     }
 }

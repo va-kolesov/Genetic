@@ -16,6 +16,7 @@ enum GeneFunction {
     RED,
     GREEN,
     BLUE,
+    F0,
     F1,
     F2,
     F3,
@@ -25,19 +26,22 @@ enum GeneFunction {
     F7,
     F8,
     F9,
+    F10,
+    F11,
 }
 
 interface IGene {
-    key: string;
-    locus: ILocus;
     influence: GeneInfluence;
     func: GeneFunction;
+    code: string;
 }
 
 interface IChromosome {
     key: string;
     code: string;
-    genes: IGene[];
+    getGenes(): IGene[];
+    crossover(ch: IChromosome): IChromosome;
+    mutate(chance: number);
 }
 
 interface IGenome {

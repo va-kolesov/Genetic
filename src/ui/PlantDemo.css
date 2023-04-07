@@ -4,6 +4,8 @@
     align-items: center;
     margin: 3px;
     border-radius: 5px;
+    flex-shrink: 1;
+    min-width: 300px;
 }
 
 canvas {
@@ -12,7 +14,9 @@ canvas {
 
 .button-container {
     display: flex;
-    justify-content: space-evenly;
+    flex-wrap: wrap;
+    flex-shrink: 1;
+    min-width: 300px;
     width: 100%;
     max-width: 800px;
     margin-top: 20px;
@@ -20,6 +24,7 @@ canvas {
 
 .button {
     background-color: #dbdbdb;
+    margin: 2px;
     border: none;
     color: #3d3d3d;
     padding: 10px 20px;

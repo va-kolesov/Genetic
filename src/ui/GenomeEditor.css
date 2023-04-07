@@ -1,0 +1,12 @@
+.editor-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.input-container {
+    display: flex;
+    flex-direction: column;
+}
+.input-container input {
+    font-family: 'Courier New', Courier, monospace;
+}
