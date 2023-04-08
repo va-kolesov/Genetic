@@ -53,7 +53,9 @@ export class Branch implements IBranch {
         this.angle =
             (props.baseAngle ?? VERTICAL) +
             getAngle(props.f2) * (1 - 2 * getRandom());
-        this.thickness = getThickness(props.f3);
+        this.thickness =
+            getThickness(props.f3) +
+            (this.isStem ? getThickness(plantProps.branch.f3) : 0);
 
         this.color1 = [
             getColor(props.red?.[0]),
@@ -73,19 +75,16 @@ export class Branch implements IBranch {
         this.maxAge = this.isStem
             ? Infinity
             : props.f8
-            ? (props.f8 + 10) / this.lGrowCoeff
-            : 0.5;
+            ? (props.f8 + 10) / this.lGrowCoeff / this.lGrowCoeff
+            : Infinity;
     }
     grow(): boolean {
         const oldSize = this.lSize;
-        if (oldSize < 0.8) {
+        if (oldSize < 1) {
             this.lSize += this.lGrowCoeff;
             this.tsize += this.tGrowCoeff;
-        } else if (oldSize < 1) {
-            this.lSize += this.lGrowCoeff * this.lGrowCoeff;
-            this.tsize += this.tGrowCoeff;
         } else if (oldSize < 2) {
-            this.lSize += this.lGrowCoeff * this.lGrowCoeff * this.lGrowCoeff;
+            this.lSize += this.lGrowCoeff * this.lGrowCoeff;
             this.tsize += this.tGrowCoeff * this.tGrowCoeff;
         } else {
             this.tsize += this.tGrowCoeff * this.tGrowCoeff;
@@ -101,27 +100,6 @@ export class Branch implements IBranch {
         });
         this.branches = this.branches.filter((br) => !br.dead);
         if (this.lSize >= 0.5 && oldSize < 0.5) {
-            const child = new Branch(
-                this,
-                {
-                    ...(this.isStem
-                        ? this.plantProps.plant
-                        : this.plantProps.branch),
-                    baseAngle: this.angle,
-                    isStem: this.isStem,
-                },
-                this.plantProps
-            );
-            this.branches.push(child);
-            if (!this.isStem) {
-                const leaf = new Leaf(this, {
-                    ...this.plantProps.leaf,
-                    baseAngle: this.angle,
-                });
-                this.leaves.push(leaf);
-            }
-        }
-        if (this.lSize >= 1 && oldSize < 1) {
             if (this.childChance < getRandom()) {
                 const child = new Branch(
                     this,
@@ -133,6 +111,45 @@ export class Branch implements IBranch {
                     this.plantProps
                 );
                 this.branches.push(child);
+            } else if (!this.isStem) {
+                const leaf = new Leaf(this, {
+                    ...this.plantProps.leaf,
+                    baseAngle: this.angle,
+                });
+                this.leaves.push(leaf);
+            }
+        }
+        if (this.lSize >= 1 && oldSize < 1) {
+            if (this.isStem) {
+                const child = new Branch(
+                    this,
+                    {
+                        ...this.plantProps.plant,
+                        baseAngle: this.angle,
+                        isStem: this.isStem,
+                    },
+                    this.plantProps
+                );
+                this.branches.push(child);
+            } else {
+                if (this.childChance < getRandom()) {
+                    const child = new Branch(
+                        this,
+                        {
+                            ...this.plantProps.branch,
+                            baseAngle: this.angle,
+                            f2: this.plantProps.branch.f2,
+                        },
+                        this.plantProps
+                    );
+                    this.branches.push(child);
+                } else {
+                    const leaf = new Leaf(this, {
+                        ...this.plantProps.leaf,
+                        baseAngle: this.angle,
+                    });
+                    this.leaves.push(leaf);
+                }
             }
         }
         this.age++;

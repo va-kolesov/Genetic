@@ -5,7 +5,7 @@ interface IProps {
     plant: IPlant;
   }
   
-  const PlantCanvas: React.FC<IProps> = ({ plant, v }) => {
+  const PlantCanvas: React.FC<IProps> = ({ plant, v ,w,h}) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
   
     useEffect(() => {
@@ -14,13 +14,13 @@ interface IProps {
   
       // очищаем canvas
       ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, 400, 800);
+      ctx.fillRect(0, 0, w, h);
   
       // рисуем растение
       plant.draw(ctx);
     }, [plant, v]);
   
-    return <canvas ref={canvasRef} width={400} height={800} />;
+    return <canvas ref={canvasRef} width={w} height={h} />;
   };
   
   export default PlantCanvas;

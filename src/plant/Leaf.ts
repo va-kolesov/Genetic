@@ -7,6 +7,7 @@ export class Leaf implements ILeaf {
     position = { x: 0, y: 0 };
     size: number;
     angle: number;
+    baseAngle: number;
     length: number;
     growCoeff: number;
     color1: number[];
@@ -23,10 +24,11 @@ export class Leaf implements ILeaf {
             getColor(props.green?.[1]) || this.color1[0],
             getColor(props.blue?.[1]) || this.color1[0],
         ];
-        this.length = getLength(props.f1);
-        this.angle =
+        this.length = getLength(props.f1)*3;
+        this.baseAngle =
             (props.baseAngle ?? VERTICAL) +
             getAngle(props.f2) * (1 - 2 * getRandom());
+        this.angle = getAngle(props.f2);
         this.size = 0.1;
         this.growCoeff = props.f5 ? (props.f5 + 1.1) / 10 : GROWTH_COEFFICIENT;
     }
@@ -37,8 +39,17 @@ export class Leaf implements ILeaf {
     }
     draw(ctx: CanvasRenderingContext2D) {
         let { x, y } = this.parent ? this.parent.end : { x: 0, y: 0 };
+        x -= Math.cos(this.baseAngle) * this.size * this.length;
+        y -= Math.sin(this.baseAngle) * this.size * this.length;
         ctx.beginPath();
-        ctx.arc(x, y, this.size * this.length, 0, this.angle);
+        ctx.arc(
+            x,
+            y,
+            this.size * this.length,
+            this.baseAngle,
+            this.angle + this.baseAngle,
+            this.angle < 0
+        );
         ctx.fillStyle = this.getColor();
         ctx.fill();
     }
