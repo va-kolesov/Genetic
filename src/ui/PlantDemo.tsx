@@ -31,6 +31,10 @@ export default ({ exportGenome, getGenome, importEnabled }) => {
             if (anim) {
                 plant.grow();
                 setV(v + 1);
+                if (v > 100) {
+                    setAnim(false);
+                    setV(0);
+                }
             }
         }, T);
     }
@@ -109,7 +113,7 @@ export default ({ exportGenome, getGenome, importEnabled }) => {
                 <button
                     disabled={!importEnabled}
                     className="button"
-                    title="Загружает растение из буффера и создает новое растение"
+                    title="Загружает геном из буффера и создает новое растение"
                     onClick={() => {
                         const genomeStr = getGenome(genome);
                         if (genomeStr) {

@@ -3,6 +3,7 @@ import PlantDemo from "./ui/PlantDemo";
 import "./App.css";
 import { Genome } from "./genetics/Genome";
 import GenomeEditor from "./ui/GenomeEditor";
+import Collection from "./ui/Collection";
 
 const DemoCell = ({ exportGenome, getGenome, importEnabled, onDelete }) => {
     return (
@@ -30,8 +31,13 @@ export default () => {
     const [genome, setGenome] = React.useState("");
     const [g, setG] = React.useState(0);
     const [demos, setDemos] = React.useState([counter++, counter++, counter++]);
-    const exportGenome = (gen: Genome) => {
-        const str = JSON.stringify(gen);
+    const exportGenome = (gen: Genome | string) => {
+        let str;
+        if (gen instanceof Genome) {
+            str = JSON.stringify(gen);
+        } else {
+            str = gen;
+        }
         setGenome(str);
         setG(g + 1);
     };
@@ -68,6 +74,14 @@ export default () => {
                     g={g}
                     genome={genome}
                     exportGenome={exportGenome}
+                />
+                <Collection
+                    storage={JSON.parse(
+                        localStorage.getItem("Genetica") || "[]"
+                    )}
+                    exportGenome={exportGenome}
+                    getGenome={getGenome}
+                    importEnabled={!!genome}
                 />
             </div>
         </div>

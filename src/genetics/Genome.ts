@@ -24,7 +24,7 @@ export class Genome implements IGenome {
         }
         return new Genome(chromosomes);
     }
-    static getRandom(chromosomesCount: number = 2): Genome {
+    static getRandom(chromosomesCount: number = 1): Genome {
         let chromosomes = Array.from({ length: chromosomesCount }, () =>
             Chromosome.getRandom()
         );

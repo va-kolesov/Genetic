@@ -20,15 +20,15 @@ export class Leaf implements ILeaf {
             getColor(props.blue?.[0]),
         ];
         this.color2 = [
-            getColor(props.red?.[1]) || this.color1[0],
-            getColor(props.green?.[1]) || this.color1[0],
-            getColor(props.blue?.[1]) || this.color1[0],
+            props.red?.[1] ? getColor(props.red?.[1]) : this.color1[0],
+            props.green?.[1] ? getColor(props.green?.[1]) : this.color1[1],
+            props.blue?.[1] ? getColor(props.blue?.[1]) : this.color1[2],
         ];
-        this.length = getLength(props.f1)*3;
-        this.baseAngle =
-            (props.baseAngle ?? VERTICAL) +
-            getAngle(props.f2) * (1 - 2 * getRandom());
-        this.angle = getAngle(props.f2);
+        this.length = getLength(props.f1);
+        this.baseAngle = (props.baseAngle ?? VERTICAL) * (1 - 2 * getRandom());
+        this.angle = getAngle(props.f3, 2);
+        this.angle =
+            getAngle(props.f3,2)*Math.sign(1 - 2 * getRandom()) + getAngle(props.f3,16)*(1 - 2 * getRandom());
         this.size = 0.1;
         this.growCoeff = props.f5 ? (props.f5 + 1.1) / 10 : GROWTH_COEFFICIENT;
     }
@@ -39,18 +39,31 @@ export class Leaf implements ILeaf {
     }
     draw(ctx: CanvasRenderingContext2D) {
         let { x, y } = this.parent ? this.parent.end : { x: 0, y: 0 };
-        x -= Math.cos(this.baseAngle) * this.size * this.length;
-        y -= Math.sin(this.baseAngle) * this.size * this.length;
+        const s = Math.sqrt(this.size);
+        x -= Math.cos(this.baseAngle) * s * this.length;
+        y -= Math.sin(this.baseAngle) * s * this.length;
         ctx.beginPath();
         ctx.arc(
             x,
             y,
-            this.size * this.length,
+            s * this.length,
             this.baseAngle,
             this.angle + this.baseAngle,
             this.angle < 0
         );
         ctx.fillStyle = this.getColor();
+        const gradient = ctx.createRadialGradient(
+            x,
+            y,
+            0,
+            x,
+            y,
+            this.length * s
+        );
+        gradient.addColorStop(0, "white");
+        gradient.addColorStop(1, this.getColor());
+
+        ctx.fillStyle = gradient;
         ctx.fill();
     }
     getColor(): string {

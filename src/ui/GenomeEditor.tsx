@@ -96,6 +96,35 @@ export default ({ genome, g, exportGenome }) => {
                     <button
                         disabled={!stateGenome}
                         className="button"
+                        title="Сохраняет геном в коллекции"
+                        onClick={() => {
+                            if (stateGenome) {
+                                let storage = JSON.parse(
+                                    localStorage.getItem("Genetica") || "[]"
+                                );
+                                storage = [
+                                    ...storage,
+                                    {
+                                        name: "123",
+                                        key: 'unique'+storage.length,
+                                        genome: genome,
+                                    },
+                                ];
+                                localStorage.setItem(
+                                    "Genetica",
+                                    JSON.stringify(storage)
+                                );
+                            }
+                        }}
+                    >
+                        <img
+                            src="../icons/pin.png"
+                            alt="Сохранить в коллекции"
+                        />
+                    </button>
+                    <button
+                        disabled={!stateGenome}
+                        className="button"
                         title="Сохраняет геном в json/txt"
                         onClick={() => {
                             if (stateGenome) {
@@ -132,7 +161,6 @@ export default ({ genome, g, exportGenome }) => {
                                     // setting up the reader
                                     var reader = new FileReader();
                                     reader.readAsText(file, "UTF-8");
-
                                     // here we tell the reader what to do when it done reading...
                                     reader.onload = (
                                         readerEvent: React.ReaderEvent

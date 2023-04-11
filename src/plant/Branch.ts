@@ -44,7 +44,7 @@ export class Branch implements IBranch {
         plantProps: IPlantProperties
     ) {
         this.parent = parent;
-        this.level = parent ? (parent.level ?? 0) + 1 : 0;
+        this.level = parent ? (parent.level ?? 0) + 1 : 1;
         this.isStem = !!props.isStem;
         this.plantProps = plantProps;
         this.length =
@@ -52,10 +52,9 @@ export class Branch implements IBranch {
             (this.isStem ? (getSign(props.f4) * getLength(props.f5)) / 2 : 0);
         this.angle =
             (props.baseAngle ?? VERTICAL) +
-            getAngle(props.f2) * (1 - 2 * getRandom());
+            getAngle(props.f2)*Math.sign(1 - 2 * getRandom()) + Math.PI/16*(1 - 2 * getRandom());
         this.thickness =
-            getThickness(props.f3) +
-            (this.isStem ? getThickness(plantProps.branch.f3) : 0);
+            getThickness(props.f3);
 
         this.color1 = [
             getColor(props.red?.[0]),
@@ -63,14 +62,14 @@ export class Branch implements IBranch {
             getColor(props.blue?.[0]),
         ];
         this.color2 = [
-            getColor(props.red?.[1]) || this.color1[0],
-            getColor(props.green?.[1]) || this.color1[0],
-            getColor(props.blue?.[1]) || this.color1[0],
+            props.red?.[1] ? getColor(props.red?.[1]) : this.color1[0],
+            props.green?.[1] ? getColor(props.green?.[1]) : this.color1[1],
+            props.blue?.[1] ? getColor(props.blue?.[1]) : this.color1[2],
         ];
         this.lSize = 0.1;
         this.tsize = 0.1;
-        this.lGrowCoeff = props.f5 ? (props.f5 + 1.1) / 10 : GROWTH_COEFFICIENT;
-        this.tGrowCoeff = props.f6 ? (props.f6 + 1.1) / 10 : GROWTH_COEFFICIENT;
+        this.lGrowCoeff = (props.f5 ? (props.f5 + 1.1) / 10 : GROWTH_COEFFICIENT)/Math.pow(this.level,.3);
+        this.tGrowCoeff = (props.f6 ? (props.f6 + 1.1) / 10 : GROWTH_COEFFICIENT)/Math.pow(this.level,.3);
         this.childChance = props.f7 ? Math.abs(props.f7) : 0.5;
         this.maxAge = this.isStem
             ? Infinity
@@ -101,59 +100,50 @@ export class Branch implements IBranch {
         this.branches = this.branches.filter((br) => !br.dead);
         if (this.lSize >= 0.5 && oldSize < 0.5) {
             if (this.childChance < getRandom()) {
-                const child = new Branch(
-                    this,
-                    {
-                        ...this.plantProps.branch,
-                        baseAngle: this.angle,
-                        f2: this.plantProps.branch.f2,
-                    },
-                    this.plantProps
-                );
-                this.branches.push(child);
+                this.createChildBranch(false);
             } else if (!this.isStem) {
-                const leaf = new Leaf(this, {
-                    ...this.plantProps.leaf,
-                    baseAngle: this.angle,
-                });
-                this.leaves.push(leaf);
+                this.createLeaf();
             }
         }
         if (this.lSize >= 1 && oldSize < 1) {
             if (this.isStem) {
-                const child = new Branch(
-                    this,
-                    {
-                        ...this.plantProps.plant,
-                        baseAngle: this.angle,
-                        isStem: this.isStem,
-                    },
-                    this.plantProps
-                );
-                this.branches.push(child);
+                this.createChildBranch(true);
             } else {
                 if (this.childChance < getRandom()) {
-                    const child = new Branch(
-                        this,
-                        {
-                            ...this.plantProps.branch,
-                            baseAngle: this.angle,
-                            f2: this.plantProps.branch.f2,
-                        },
-                        this.plantProps
-                    );
-                    this.branches.push(child);
+                    this.createChildBranch(false);
                 } else {
-                    const leaf = new Leaf(this, {
-                        ...this.plantProps.leaf,
-                        baseAngle: this.angle,
-                    });
-                    this.leaves.push(leaf);
+                    this.createLeaf();
                 }
             }
         }
         this.age++;
         return this.age < this.maxAge;
+    }
+    createLeaf() {
+        let leaf = new Leaf(this, {
+            ...this.plantProps.leaf,
+            baseAngle: this.angle,
+        });
+        this.leaves.push(leaf);
+        leaf = new Leaf(this, {
+            ...this.plantProps.leaf,
+            baseAngle: this.angle,
+        });
+        this.leaves.push(leaf);
+    }
+    createChildBranch(isStem) {
+        const child = new Branch(
+            this,
+            {
+                ...(isStem && this.isStem
+                    ? this.plantProps.plant
+                    : this.plantProps.branch),
+                baseAngle: this.angle,
+                isStem: isStem && this.isStem,
+            },
+            this.plantProps
+        );
+        this.branches.push(child);
     }
     draw(ctx: CanvasRenderingContext2D) {
         let { x: x1, y: y1 } = this.parent ? this.parent.end : { x: 0, y: 0 };

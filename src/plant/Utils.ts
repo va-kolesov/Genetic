@@ -37,21 +37,45 @@ function setPropValue(
     switch (func) {
         case GeneFunction.RED:
             if (!props[infl].red) {
-                props[infl].red = [];
+                props[infl].red = [val];
+            } else {
+                props[infl].red[0] = val;
             }
-            props[infl].red.push(val);
             break;
         case GeneFunction.GREEN:
             if (!props[infl].green) {
-                props[infl].green = [];
+                props[infl].green = [val];
+            } else {
+                props[infl].green[0] = val;
             }
-            props[infl].green.push(val);
             break;
         case GeneFunction.BLUE:
             if (!props[infl].blue) {
-                props[infl].blue = [];
+                props[infl].blue = [val];
+            } else {
+                props[infl].blue[0] = val;
             }
-            props[infl].blue.push(val);
+            break;
+        case GeneFunction.REDF:
+            if (!props[infl].red) {
+                props[infl].red = [val];
+            }
+            props[infl].red[1] = val;
+            break;
+        case GeneFunction.GREENF:
+            if (!props[infl].green) {
+                props[infl].green = [val];
+            }
+            props[infl].green[1] = val;
+            break;
+        case GeneFunction.BLUEF:
+            if (!props[infl].blue) {
+                props[infl].blue = [val];
+            }
+            props[infl].blue[1] = val;
+            break;
+        case GeneFunction.F0:
+            props[infl].f0 = val;
             break;
         case GeneFunction.F1:
             props[infl].f1 = val;
@@ -80,6 +104,12 @@ function setPropValue(
         case GeneFunction.F9:
             props[infl].f9 = val;
             break;
+        case GeneFunction.F10:
+            props[infl].f10 = val;
+            break;
+        case GeneFunction.F11:
+            props[infl].f11 = val;
+            break;
     }
 }
 
@@ -95,8 +125,8 @@ export function getLength(val?: number) {
         ? AVG_BRANCH_LENGHT + (val + 1) * (val + 1) * 3
         : DEFAULT_LENGTH;
 }
-export function getAngle(val?: number) {
-    return val !== undefined ? (val * Math.PI) / 6 : DEFAULT_ANGLE;
+export function getAngle(val?: number, div?: number) {
+    return val !== undefined ? (val * Math.PI) / (div || 6) : DEFAULT_ANGLE;
 }
 export function getThickness(val?: number) {
     return val !== undefined ? 3 + val * 2 : DEFAULT_THICKNESS;

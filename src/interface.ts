@@ -28,6 +28,9 @@ enum GeneFunction {
     F9,
     F10,
     F11,
+    REDF,
+    GREENF,
+    BLUEF,
 }
 
 interface IGene {
@@ -99,6 +102,7 @@ interface IBranchProps {
     length?: number;
     angle?: number;
     thickness?: number;
+    f0?: number;
     f1?: number;
     f2?: number;
     f3?: number;
@@ -108,6 +112,8 @@ interface IBranchProps {
     f7?: number;
     f8?: number;
     f9?: number;
+    f10?: number;
+    f11?: number;
 }
 
 interface IBranch extends IDrawable, IBranchProps {

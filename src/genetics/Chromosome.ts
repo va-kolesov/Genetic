@@ -1,10 +1,10 @@
 import { IChromosome, IGene } from "../interface";
 
-const ALPH = "ABCDEFGHIJKL";
+const ALPH = "ABCDEFGHIJKLMNO";
 const SEPARATORS = "-";
 const ALL = ALPH+SEPARATORS;
 const GENE_LENGTH_AVG = 10;
-const GENE_LENGTH_SGM = 0;
+const GENE_LENGTH_SGM = 10;
 
 let counter = 0;
 
@@ -19,7 +19,11 @@ export class Chromosome implements IChromosome {
     mutate(chance: number) {
         let code = '';
         for (let i = 0; i < this.code.length; i++) {
-            code += Math.random() < chance ? ALL[Math.floor(ALL.length * Math.random())]: this.code[i];
+            const char = ALL[Math.floor((ALL.length+1) * Math.random())] ?? ''
+            code += Math.random() < chance ? char : this.code[i];
+            if (Math.random() < chance*chance) {
+                code += this.code[i];
+            }
         }
         this.code = code;
     }
@@ -65,7 +69,7 @@ export class Chromosome implements IChromosome {
     static getRandomCode(genesCount): string {
         let code = "";
         for (let i = 0; i < genesCount; i++) {
-            code += Chromosome.getRandomeGene(ALPH[i%5]+ALPH[i%12]);
+            code += Chromosome.getRandomeGene(ALPH[i%5]+ALPH[i%15]);
         }
         return code;
     }
